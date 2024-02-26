@@ -1,0 +1,43 @@
+.note {
+    background: #fff;
+    border-radius: 7px;
+    box-shadow: 6px 6px 6px #ccc;
+    padding: 10px;
+    width: 310px;
+    margin: 16px;
+    float: left;
+    overflow: hidden;
+  }
+  .note h1 {
+    font-size: 1.2em;
+    margin-bottom: 6px;
+  }
+  .note p {
+    font-size: 1rem;
+    margin-bottom: 10px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    color: black;
+  }
+  
+  .note button {
+    position: relative;
+    float: right;
+    margin-right: 10px;
+    background-color: #f5ba13;
+    border: none;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    outline: none;
+  }
+
+.delete-icon {
+    font-size: 1.5rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: black;
+}
+  
