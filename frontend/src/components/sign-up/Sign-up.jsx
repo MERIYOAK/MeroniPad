@@ -7,7 +7,7 @@ import { MdCancel } from "react-icons/md";
 import { Link } from 'react-router-dom';
 import BASE_URL from '../../../config';
 
-function Sign_up() {
+function Sign_up(props) {
     const navigate = useNavigate();
     const { dispatch } = useAuth();
     const [showSignUp, setShowSignUp] = useState(true);
@@ -18,6 +18,7 @@ function Sign_up() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [image, setImage] = useState(null);
     const handleClick = () => {
         setShowSignUp(!showSignUp);
     };
@@ -42,17 +43,27 @@ function Sign_up() {
                 return;
             }
 
+            // Validate image size
+            const imageFile = e.target.querySelector('#image').files[0];
+            const imageSizeInMegabytes = imageFile.size / (1024 * 1024);
+
+            if (imageSizeInMegabytes > 1) {
+                alert('Image size must be below 1 megabyte.');
+                return;
+            }
+
             const data = {
                 firstName: capitalizedFirstName,
                 middleName: capitalizedMiddleName,
                 lastName: capitalizedLastName,
                 username: username,
+                image: image,
                 password: password,
             };
 
             const response = await axios.post(`${BASE_URL}/sign_up`, data, {
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'multipart/form-data',
                 },
             });
 
@@ -63,6 +74,7 @@ function Sign_up() {
             } else if (responseData.success) {
                 alert(`${responseData.message}\nYour email is ${responseData.email}`);
 
+                // Set user as authenticated
                 dispatch({
                     type: 'LOGIN',
                     payload: {
@@ -72,6 +84,7 @@ function Sign_up() {
                         lastName: responseData.lastName,
                         username: responseData.username,
                         email: responseData.email,
+                        imageUrl: responseData.imageUrl
                     },
                 });
 
@@ -83,7 +96,10 @@ function Sign_up() {
                 localStorage.setItem('middleName', responseData.middleName);
                 localStorage.setItem('lastName', responseData.lastName);
                 localStorage.setItem('username', responseData.username);
+                localStorage.setItem('imageUrl', responseData.imageUrl);
+                localStorage.setItem('imageName', responseData.imageName);
                 localStorage.setItem('email', responseData.email);
+
                 navigate('/');
 
             } else {
@@ -113,17 +129,6 @@ function Sign_up() {
                 alert(responseData.message);
             } else if (responseData.success) {
                 alert(responseData.message);
-                dispatch({
-                    type: 'LOGIN',
-                    payload: {
-                        id: responseData.id,
-                        firstName: responseData.firstName,
-                        middleName: responseData.middleName,
-                        lastName: responseData.lastName,
-                        username: responseData.username,
-                        email: responseData.email,
-                    },
-                });
 
                 // Store sensitive information in localStorage
                 localStorage.setItem('sessionId', responseData.sessionId);
@@ -134,7 +139,42 @@ function Sign_up() {
                 localStorage.setItem('lastName', responseData.lastName);
                 localStorage.setItem('username', responseData.username);
                 localStorage.setItem('email', responseData.email);
+                localStorage.setItem('imageUrl', responseData.imageUrl);
+                localStorage.setItem('imageName', responseData.imageName);
 
+
+                dispatch({
+                    type: 'LOGIN',
+                    payload: {
+                        id: responseData.id,
+                        firstName: responseData.firstName,
+                        middleName: responseData.middleName,
+                        lastName: responseData.lastName,
+                        username: responseData.username,
+                        email: responseData.email,
+                        imageUrl: responseData.imageUrl
+                    },
+                });
+
+                props.onLogin(responseData.notes);
+
+                // // Calculate expiration time
+                // const expirationTime = new Date(responseData.expirationTime);
+                // const remainingTime = Math.floor((expirationTime.getTime() - Date.now()) / 1000);
+
+                // // Log remaining time until expiration
+                // console.log('Remaining time until expiration:', remainingTime, 'seconds');
+
+                // // Set up interval to log remaining time
+                // const intervalId = setInterval(() => {
+                //     const remaining = Math.floor((expirationTime.getTime() - Date.now()) / 1000);
+                //     console.log('Remaining time until expiration:', remaining, 'seconds');
+
+                //     if (remaining <= 0) {
+                //         clearInterval(intervalId);
+                //         console.log('Presigned URL has expired.');
+                //     }
+                // }, 1000);
                 navigate('/');
             } else {
                 alert('An error occurred. Please try again.');
@@ -168,6 +208,8 @@ function Sign_up() {
                                     onChange={(e) => setUsername(e.target.value)}
                                     placeholder='Username :'
                                     required />
+
+                                <input type="file" id="image" name="image" onChange={(e) => setImage(e.target.files[0])} accept="image/*" required placeholder='Profile Image :' />
 
                                 <input type="password" id="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder='Password :' />
 

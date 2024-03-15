@@ -12,6 +12,7 @@ function CreateArea({ onNoteAdded }) {
         title: "",
         content: "",
         userId: "",
+        createdAt: "",
     });
     const [isExpanded, setIsExpanded] = useState(false);
 
@@ -21,6 +22,7 @@ function CreateArea({ onNoteAdded }) {
             title: name === "title" ? value : note.title,
             content: name === "content" ? value : note.content,
             userId: user ? localStorage.getItem("userId") : "",
+            createdAt: new Date().toISOString(),
         });
     };
     const submitNote = async (event) => {
@@ -40,6 +42,8 @@ function CreateArea({ onNoteAdded }) {
                 setNote({
                     title: "",
                     content: "",
+                    userId: "",
+                    createdAt: "",
                 });
 
                 setIsExpanded(false);

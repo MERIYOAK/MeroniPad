@@ -56,8 +56,7 @@ function App() {
   };
 
   const handleNoteAdded = (newNote) => {
-    // Update the state with the newly added note
-    setNotes(prevNotes => [newNote, ...prevNotes]);
+    fetchData();
   };
 
   const handleNoteDeleted = (noteId) => {
@@ -68,6 +67,10 @@ function App() {
     fetchData();
   }, [dispatch]);
 
+  const handleSetNotes = (loginNotes) => {
+    setNotes(loginNotes);
+  };
+
 
   return (
     <Router>
@@ -76,7 +79,7 @@ function App() {
           path="/"
           element={
             <>
-              <Header />
+              <Header setNotes={handleSetNotes} />
               <CreateArea onNoteAdded={handleNoteAdded} />
               {notes.map((noteItem, index) => (
                 <Note
@@ -92,7 +95,7 @@ function App() {
             </>
           }
         />
-        <Route path="/sign_up" element={<Sign_up />} />
+        <Route path="/sign_up" element={<Sign_up onLogin={handleSetNotes} />} />
       </Routes>
     </Router>
   );
