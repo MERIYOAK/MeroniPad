@@ -19,6 +19,8 @@ function Sign_up(props) {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [image, setImage] = useState(null);
+    const [isLoginButtonDisabled, setLoginButtonDisabled] = useState(false);
+    const [isSignUpButtonDisabled, setSignUpButtonDisabled] = useState(false);
     const handleClick = () => {
         setShowSignUp(!showSignUp);
     };
@@ -26,6 +28,7 @@ function Sign_up(props) {
     const handleSignUp = async (e) => {
         try {
             e.preventDefault();
+            setSignUpButtonDisabled(true);
 
             // Capitalize the first letter of each name
             const capitalizedFirstName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
@@ -71,8 +74,11 @@ function Sign_up(props) {
 
             if (responseData.error) {
                 alert(responseData.message);
+                setSignUpButtonDisabled(false);
+
             } else if (responseData.success) {
                 alert(`${responseData.message}\nYour email is ${responseData.email}`);
+                setSignUpButtonDisabled(false);
 
                 // Set user as authenticated
                 dispatch({
@@ -115,6 +121,8 @@ function Sign_up(props) {
         try {
             e.preventDefault();
 
+            setLoginButtonDisabled(true);
+
             const response = await axios.post(`${BASE_URL}/login`, {
                 emailOrUsername,
                 password
@@ -127,8 +135,12 @@ function Sign_up(props) {
 
             if (responseData.error) {
                 alert(responseData.message);
+
+                setLoginButtonDisabled(false);
+
             } else if (responseData.success) {
                 alert(responseData.message);
+                setLoginButtonDisabled(false);
 
                 // Store sensitive information in localStorage
                 localStorage.setItem('sessionId', responseData.sessionId);
@@ -214,7 +226,7 @@ function Sign_up(props) {
                                 <input type="password" id="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder='Password :' />
 
                                 <input type="password" id="confirmPassword" name="confirmPassword" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required placeholder='Confirm Password :' />
-                                <button type="submit">Sign up</button>
+                                <button type="submit" disabled={isSignUpButtonDisabled} style={isSignUpButtonDisabled ? { display: 'none' } : {}}>Sign up</button>
                                 <p >Already have an account? <a className="log_in-link" onClick={handleClick}>Login</a></p>
                             </form>
                         </div>
@@ -246,7 +258,7 @@ function Sign_up(props) {
                                     required
                                     placeholder='Password'
                                 /><br />
-                                <button type="submit">Log in</button>
+                                <button type="submit" disabled={isLoginButtonDisabled} style={isLoginButtonDisabled ? { display: 'none' } : {}}>Log in</button>
                                 <p >I don't have an account? <a className="log_in-link" onClick={handleClick}>Sign up</a></p>
 
                             </form>
